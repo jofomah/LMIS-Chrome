@@ -7,7 +7,7 @@ angular.module('lmisChromeApp')
         data:{
           label:'Stock Count'
         },
-        url:'stockCountIndex?facility&reportMonth&reportYear',
+        url:'/stockCountIndex?facility&reportMonth&reportYear',
         templateUrl: 'views/stockcount/index.html',
         controller:'StockCountCtrl',
         resolve:{
@@ -20,7 +20,7 @@ angular.module('lmisChromeApp')
         data:{
           label:'Stock Count Form'
         },
-        url:'stockCountForm?facility&reportMonth&reportYear',
+        url:'/stockCountForm?facility&reportMonth&reportYear',
         templateUrl: 'views/stockcount/daily_stock_count_form.html',
         controller: 'StockCountCtrl',
         resolve:{
@@ -33,7 +33,7 @@ angular.module('lmisChromeApp')
         data:{
           label:'Stock Count Form'
         },
-        url:'stockCountStepForm?facility&reportMonth&reportYear',
+        url:'/stockCountStepForm?facility&reportMonth&reportYear',
         templateUrl: 'views/stockcount/step_entry_form.html',
         controller: 'StockCountCtrl',
         resolve:{
@@ -46,7 +46,7 @@ angular.module('lmisChromeApp')
         data:{
           label:'Waste Count Form'
         },
-        url: 'wasteCountForm?facility&reportMonth&reportYear',
+        url: '/wasteCountForm?facility&reportMonth&reportYear',
         templateUrl: 'views/stockcount/daily_waste_count_form.html',
         controller:'StockCountCtrl',
         resolve: {
@@ -266,6 +266,19 @@ angular.module('lmisChromeApp')
     $scope.stockCount.month = $scope.reportMonth;
     $scope.stockCount.year = $scope.reportYear;
     $scope.stockCount.day = $scope.stockCount.day ? $scope.stockCount.day: $scope.currentDay;
+    $scope.alertMsg = 'stock count value is invalid, at least enter Zero "0" to proceed';
+
+
+    $scope.changeState = function(direction){
+      $scope.currentEntry = $scope.stockCount.unopened[$scope.step];
+      if(stockCountFactory.validate.invalid($scope.currentEntry)){
+
+        alertsFactory.add({message: $scope.alertMsg, type: 'danger'});
+      }
+      else{
+        $scope.step = direction === 0? $scope.step-1 : $scope.step + 1;
+      }
+    };
 
     $scope.save = function(){
       $scope.stockCount.day = $scope.stockCount.day ? $scope.stockCount.day: $scope.currentDay;
