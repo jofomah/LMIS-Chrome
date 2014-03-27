@@ -42,7 +42,7 @@ ddescribe('chromeStorageApi', function () {
   it('should be able to set data to the storage', function () {
     expect(Object.keys(objectStore).length).toBe(0);
     spyOn(mockWindow.chrome.storage.local,'set').andCallThrough();
-    chromeStorageApi.set({'key': 'value'});
+    var promise = chromeStorageApi.set({'key': 'value'});
     expect(mockWindow.chrome.storage.local.set).toHaveBeenCalled();
     expect(Object.keys(objectStore).length).toBe(1);
   });
