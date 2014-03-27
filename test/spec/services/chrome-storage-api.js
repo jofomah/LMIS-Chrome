@@ -1,7 +1,7 @@
 'use strict';
 
-describe('chromeStorageApi', function () {
-  var mockWindow, chromeStorageApi;
+ddescribe('chromeStorageApi', function () {
+  var mockWindow, chromeStorageApi, objectStore = {};
 
   beforeEach(module('lmisChromeApp'));
 
@@ -10,10 +10,16 @@ describe('chromeStorageApi', function () {
       chrome: {
         storage: {
           local: {
-            set: function() { },
-            get: function() { },
-            remove: function() { },
-            clear: function() { }
+            set: function (obj) {
+              objectStore[obj.key] = obj.value;
+            },
+            get: function () {
+            },
+            remove: function () {
+            },
+            clear: function () {
+              objectStore = {};
+            }
           }
         }
       },
@@ -29,27 +35,33 @@ describe('chromeStorageApi', function () {
     chromeStorageApi = _chromeStorageApi_;
   }));
 
+  afterEach(function(){
+    objectStore = {};//clear object store after each test
+  });
 
   it('should be able to set data to the storage', function () {
-    spyOn(mockWindow.chrome.storage.local,'set');
-    chromeStorageApi.set({'key':'value'});
+    expect(Object.keys(objectStore).length).toBe(0);
+    spyOn(mockWindow.chrome.storage.local,'set').andCallThrough();
+    chromeStorageApi.set({'key': 'value'});
     expect(mockWindow.chrome.storage.local.set).toHaveBeenCalled();
+    expect(Object.keys(objectStore).length).toBe(1);
   });
 
   it('should be able to get an item from the storage', function () {
-    spyOn(mockWindow.chrome.storage.local,'get');
-    chromeStorageApi.get('key');
+    spyOn(mockWindow.chrome.storage.local, 'get');
+    expect(Object.keys(objectStore).length).toBe(0);
+    chromeStorageApi.get('value');
     expect(mockWindow.chrome.storage.local.get).toHaveBeenCalled();
   });
 
   it('should be able to remove an item from the storage', function () {
-    spyOn(mockWindow.chrome.storage.local,'remove');
+    spyOn(mockWindow.chrome.storage.local, 'remove');
     chromeStorageApi.remove('key');
     expect(mockWindow.chrome.storage.local.remove).toHaveBeenCalled();
   });
 
   it('should be able to remove all item from the storage', function () {
-    spyOn(mockWindow.chrome.storage.local,'clear');
+    spyOn(mockWindow.chrome.storage.local, 'clear');
     chromeStorageApi.clear();
     expect(mockWindow.chrome.storage.local.clear).toHaveBeenCalled();
   });
