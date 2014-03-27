@@ -47,6 +47,26 @@ ddescribe('chromeStorageApi', function () {
     expect(Object.keys(objectStore).length).toBe(1);
   });
 
+  it('as a user, i expect it to test chrome storage api functions that returns promise', function(){
+    console.log("hi");
+    spyOn(chromeStorageApi,'set').andCallThrough();
+    runs(
+
+        function () {
+          console.log("inside runs");
+          chromeStorageApi.set({'key': 'value'}).then(function(){
+            console.log(inside);
+          });
+        },
+        function checkExpectations(result) {
+          console.log("test expectation");
+          expect(result).toBeDefined();
+          expect(result).toBeUndefined();
+        }
+    );
+
+  });
+
   it('should be able to get an item from the storage', function () {
     spyOn(mockWindow.chrome.storage.local, 'get');
     expect(Object.keys(objectStore).length).toBe(0);
