@@ -12,6 +12,12 @@ angular.module('lmisChromeApp').service('notificationService', function ($window
  };
 
  this.beep = function(){
+   var beepMedia = Media('/media/beep.wav', function(){
+     console.log('played');
+   }, function(error){
+     console.log('error '+error);
+   });
+   beepMedia.play();
    if ($window.Audio) {
      var audio = new $window.Audio(this.BEEP_MEDIA_URL);
      audio.play();
