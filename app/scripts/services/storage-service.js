@@ -205,73 +205,94 @@ angular.module('lmisChromeApp')
 
       /**
        * loads fixtures on app startup
-       * @param void
-       * @returns {void}
+       * @returns {promise|promise|*|promise|promise}
        */
       function loadFixtures() {
         var deferred = $q.defer();
-        var database = [
-          productTypes,
-          address,
-          uom,
-          uomCategory,
-          facility,
-          program,
-          programProducts,
-          facilityType,
-          employeeCategory,
-          company,
-          companyCategory,
-          currency,
-          employee,
-          rate,
-          ccuType,
-          ccu,
-          inventory,
-          ccuProblem,
-          ccuTemperatureLog,
-          user,
-          productCategory,
-          productPresentation,
-          productProfile,
-          productFormulation,
-          modeOfAdministration,
-          batches,
-          orders,
-          bundles,
-          bundleLines,
-          bundleReceipt,
-          locations,
-          stockOut
-        ];
-        function loadData(db_name) {
-          var test_data = [];
-          getData(db_name).then(function (data) {
-                test_data = data;
-                if (angular.isUndefined(data)) {
-                  var file_url = 'scripts/fixtures/' + db_name + '.json';
-                  $http.get(file_url).success(function (data) {
-                      setTable(db_name, data);
-                  }).error(function (err) {
-                        console.log(err);
-                  });
-                }
-                else {
-                  //console.log(db_name + " is loaded with " + JSON.stringify(test_data));
-                  //loadRelatedObject(db_name);
-                }
-
-              },
-              function (reason) {
-                //console.log(reason);
-              }
-          );
-        };
-        for (var i in database) {
-          loadData(database[i]);
-        }
-        deferred.resolve(true);
+        var DB_FILE_URL = 'scripts/fixtures/lomis-db/db.json';
+        $http.get(DB_FILE_URL)
+          .success(function (data) {
+            var databases = {};
+            var dbKey = null;
+            databases[dbKey] = data;
+            chromeStorageApi.set(data)
+              .then(function(result){
+                console.log(result);
+                deferred.resolve(result);
+              }, function(error){
+                console.log(error);
+                deferred.reject(error);
+            });
+        })
+          .error(function (err) {
+            console.log(err);
+            deferred.reject(err);
+        });
         return deferred.promise;
+
+
+//        var database = [
+//          productTypes,
+//          address,
+//          uom,
+//          uomCategory,
+//          facility,
+//          program,
+//          programProducts,
+//          facilityType,
+//          employeeCategory,
+//          company,
+//          companyCategory,
+//          currency,
+//          employee,
+//          rate,
+//          ccuType,
+//          ccu,
+//          inventory,
+//          ccuProblem,
+//          ccuTemperatureLog,
+//          user,
+//          productCategory,
+//          productPresentation,
+//          productProfile,
+//          productFormulation,
+//          modeOfAdministration,
+//          batches,
+//          orders,
+//          bundles,
+//          bundleLines,
+//          bundleReceipt,
+//          locations,
+//          stockOut
+//        ];
+//        function loadData(db_name) {
+//          var test_data = [];
+//          getData(db_name).then(function (data) {
+//                test_data = data;
+//                if (angular.isUndefined(data)) {
+//                  var file_url = 'scripts/fixtures/' + db_name + '.json';
+//                  $http.get(file_url).success(function (data) {
+//                      setTable(db_name, data);
+//                  }).error(function (err) {
+//                        console.log(err);
+//                  });
+//                }
+//                else {
+//                  //console.log(db_name + " is loaded with " + JSON.stringify(test_data));
+//                  //loadRelatedObject(db_name);
+//                }
+//
+//              },
+//              function (reason) {
+//                //console.log(reason);
+//              }
+//          );
+//        };
+//        for (var i in database) {
+//          loadData(database[i]);
+//        }
+//        deferred.resolve(true);
+//        return deferred.promise;
       }
 
       /**
@@ -381,7 +402,43 @@ angular.module('lmisChromeApp')
         });
         if (!$rootScope.$$phase) $rootScope.$apply();
         return deferred.promise;
-      }
+      };
+
+      var loadDb = function(){
+        var deferred = $q.defer();
+        var db = {
+          "TABLE_ONE": {
+            "1": {
+              "uuid": "1",
+              "name": "jideobi"
+            },
+            "2": {
+              "uuid": "2",
+              "name": "ofomah"
+            }
+          },
+          "TABLE_TWO": {
+            "11": {
+              "uuid": "11",
+              "name": "Health Facility"
+            },
+            "22": {
+              "uuid": "22",
+              "name": "National Store"
+            }
+          }
+        }
+        var dbName = null;
+        var dbObj = {};
+        dbObj[dbName] = db;
+        chromeStorageApi.set(dbObj).then(function(result){
+          console.log('database loaded');
+        }, function(reason){
+          console.log('database loading failed '+reason);
+        })
+
+        return deferred.promise;
+      };
 
       return {
         all: getAllFromTable,
@@ -433,7 +490,7 @@ angular.module('lmisChromeApp')
         STOCK_COUNT: stockCount,
         WASTE_COUNT: wasteCount,
         APP_CONFIG: appConfig,
-        STOCK_OUT: stockOut
+        STOCK_OUT: stockOut,
       };
 
     });
