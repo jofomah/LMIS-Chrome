@@ -9,7 +9,7 @@ angular.module('lmisChromeApp')
         data: {
           label: 'Stock Count Home'
         },
-        templateUrl: 'views/stockcount/index.html',
+        templateUrl: 'views/stockcount/index.html',.
         resolve: {
           appConfig: function(appConfigService){
             return appConfigService.getCurrentAppConfig();
