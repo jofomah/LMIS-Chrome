@@ -75,7 +75,6 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
     $scope.disableBtn = isEmailValid;
     appConfigService.getAppFacilityProfileByEmail($scope.appConfig.uuid)
       .then(function(result){
-          console.log(result);
         $scope.disableBtn = false;
         $scope.isSubmitted = false;
         $scope.profileNotFound = false;
@@ -83,6 +82,7 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
         $scope.appConfig.stockCountInterval = result.stockCountInterval;
         $scope.appConfig.contactPerson = result.contactPerson;
         $scope.appConfig.facility = JSON.stringify(result.appFacility);//used to pre-select facility drop down
+        $scope.appConfig.appFacility = result.appFacility;
         $scope.appConfig.selectedProductProfiles = result.selectedProductProfiles;
         $scope.preSelectProductProfileCheckBox =
             appConfigService.generateAssociativeArray($scope.appConfig.selectedProductProfiles);
@@ -93,7 +93,6 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
         $scope.disableBtn = false;
         $scope.isSubmitted = false;
         $scope.profileNotFound = true;
-        console.log(error);
       });
   }
 
@@ -112,7 +111,8 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
       phoneNo: ''
     },
     selectedProductProfiles: [],
-    dateAdded: undefined
+    dateAdded: undefined,
+    appFacility: {}
   };
 
   $scope.surveyResponse = [];

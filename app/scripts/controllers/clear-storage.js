@@ -3,12 +3,15 @@
 angular.module('lmisChromeApp').config(function ($stateProvider) {
   $stateProvider.state('clearStorage', {
     url: '/clear-storage',
-    controller: function (storageService, $state, syncService, appConfigService, $q, $rootScope) {
+    controller: function (storageService, $state, syncService, appConfigService, $q) {
+      console.log('am here');
       //TODO: show animation to show that action is taking place. maybe a modal box
       var clearAndLoadFixture = function(){
         var deferred = $q.defer();
+
+        appConfigService.cache.removeAll();//clear all cache
+
         storageService.clear().then(function(clearResult){
-          console.log('clear storage caled');
           var promises = [];
           promises.push(storageService.loadFixtures());
 

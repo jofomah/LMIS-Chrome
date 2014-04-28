@@ -42,7 +42,6 @@ angular.module('lmisChromeApp').service('appConfigService', function ($q, storag
                 && stockCountDate.getTime() <= currentWeekDateInfo.last.getTime()
                 && stockCount.isComplete === 1)
         });
-        //TODO: check if stock count has been completed.
         var isStockCountReminderDue = (stockCountsWithInRange.length === 0) &&
             (today.getTime() >= currentWeekDateInfo.reminderDate.getTime());
 
@@ -94,11 +93,13 @@ angular.module('lmisChromeApp').service('appConfigService', function ($q, storag
       }
       var promises = [];
       if (result === undefined) {
-        promises.push(storageService.save(storageService.APP_CONFIG, appConfig)); //TODO: should apply changes to appConfig after save
+        promises.push(storageService.save(storageService.APP_CONFIG, appConfig));
+        cache.put(storageService.APP_CONFIG, appConfig);
       } else {
         //over-write appConfig by using existing appConfig uuid for the new appConfig.
         //2014-04-11 - it would be more readable for this to apply individual properties to result rather than uuid to appConfig, that ties storage logic to this 
         appConfig['uuid'] = result.uuid;
+        cache.put(storageService.APP_CONFIG, appConfig);
         promises.push(storageService.save(storageService.APP_CONFIG, appConfig));
       }
 
@@ -127,7 +128,6 @@ angular.module('lmisChromeApp').service('appConfigService', function ($q, storag
               var appConfig = data[appConfigUUID];
               cache.put(storageService.APP_CONFIG, appConfig);
               deferred.resolve(appConfig);
-              console.log('load: '+JSON.stringify(appConfig));
             } else {
               throw 'there are more than one app config on this device.';
             }
@@ -231,7 +231,7 @@ angular.module('lmisChromeApp').service('appConfigService', function ($q, storag
     var deferred = $q.defer();
     var appConfig = this.cache.get(storageService.APP_CONFIG);
 
-    if(appConfig !== undefined){
+    if(typeof appConfig !== 'undefined'){
       deferred.resolve(appConfig);
     }else{
       this.load().then(function(result){

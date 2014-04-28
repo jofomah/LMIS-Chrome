@@ -9,7 +9,7 @@ angular.module('lmisChromeApp')
         data: {
           label: 'Stock Count Home'
         },
-        templateUrl: 'views/stockcount/index.html',.
+        templateUrl: 'views/stockcount/index.html',
         resolve: {
           appConfig: function(appConfigService){
             return appConfigService.getCurrentAppConfig();
@@ -567,5 +567,7 @@ angular.module('lmisChromeApp')
       $scope.selectedFacility = stockCountFactory.get.productReadableName($scope.facilityProducts, $scope.step);
 
       $scope.productTypeCode = stockCountFactory.get.productTypeCode($scope.facilityProducts, $scope.step, $scope.productType);
+
+      $scope.productProfileUom = (($scope.facilityProducts[$scope.facilityProductsKeys[$scope.step]].presentation).uom).name;
     };
   });
