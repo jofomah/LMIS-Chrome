@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Home controller', function () {
+ddescribe('Home controller', function () {
   // Load the controller's module
   beforeEach(module('lmisChromeApp'));
 
@@ -39,12 +39,15 @@ describe('Home controller', function () {
     expect($state.href(state)).toEqual('#/main-activity');
   });
 
-  xit('should go to the main activity state', function () {
-     var ma = 'home.index.home.mainActivity';
-      $rootScope.$apply(function() {
-        $state.go(ma);
-        expect($state.current.name).toBe(state);
-      });
+  it('should go to the main activity state', function () {
+    var home = $state.get('home');
+    home.resolve.appConfig = function () {
+      return {};
+    };
+    $rootScope.$apply(function () {
+      $state.go(state);
+    });
+    expect($state.current.name).toBe(state);
   });
 
 });
