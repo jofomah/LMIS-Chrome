@@ -27,12 +27,12 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
       $scope.save = function(){
         $scope.isSaving = true;
 
-        var ccuBreakdownReport = {
+        var ccuBreakdownAlert = {
           ccuProfile: JSON.parse($scope.ccuBreakdown.ccuProfile),
           facility: $scope.ccuBreakdown.facility
         };
 
-        var ccuProfileInfo = ccuBreakdownReport.ccuProfile.Manufacturer+' '+ccuBreakdownReport.ccuProfile.ModelName;
+        var ccuProfileInfo = ccuBreakdownAlert.ccuProfile.Manufacturer+' '+ccuBreakdownAlert.ccuProfile.ModelName;
         var confirmationTitle = i18n('confirmCcuBreakdownReportHeader', ccuProfileInfo);
         var confirmationQuestion = i18n('dialogConfirmationQuestion');
         var buttonLabels = [i18n('yes'), i18n('no')];
@@ -40,7 +40,7 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
         notificationService.getConfirmDialog(confirmationTitle, confirmationQuestion, buttonLabels)
             .then(function (isConfirmed) {
               if (isConfirmed === true) {
-                broadcastAlertFactory.save(ccuBreakdownReport)
+                broadcastAlertFactory.save(ccuBreakdownAlert)
                     .then(function (result) {
                       //move to home page send alert in the background
                       alertFactory.success(i18n('ccuBreakdownReportSuccessMsg'));
