@@ -15,7 +15,7 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
     },
     controller: 'ReportCcuBreakdownCtrl'
   });
-}).controller('ReportCcuBreakdownCtrl', function($scope, appConfig, $modal, i18n, $log, notificationService, ccuBreakdownFactory, $state, growl, alertFactory){
+}).controller('ReportCcuBreakdownCtrl', function($scope, appConfig, $modal, i18n, $log, notificationService, broadcastAlertFactory, $state, growl, alertFactory){
 
       $scope.facilityCcuList = appConfig.selectedCcuProfiles;
       $scope.ccuBreakdown = {
@@ -40,12 +40,12 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
         notificationService.getConfirmDialog(confirmationTitle, confirmationQuestion, buttonLabels)
             .then(function (isConfirmed) {
               if (isConfirmed === true) {
-                ccuBreakdownFactory.save(ccuBreakdownReport)
+                broadcastAlertFactory.save(ccuBreakdownReport)
                     .then(function (result) {
                       //move to home page send alert in the background
                       alertFactory.success(i18n('ccuBreakdownReportSuccessMsg'));
                       $state.go('home.index.home.mainActivity');
-                      ccuBreakdownFactory.broadcast(result);
+                      broadcastAlertFactory.sendAlert(result);
                     })
                     .catch(function (reason) {
                       growl.error(i18n('ccuBreakdownReportFailedMsg'));

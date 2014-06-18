@@ -35,7 +35,7 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
     },
     controller: 'MultiStockOutBroadcastCtrl'
   });
-}).controller('MultiStockOutBroadcastCtrl', function($scope,appConfig, notificationService, $log, stockOutBroadcastFactory, $state, growl,
+}).controller('MultiStockOutBroadcastCtrl', function($scope,appConfig, notificationService, $log, broadcastAlertFactory, $state, growl,
                                                  i18n, facilityStockListProductTypes, $stateParams, inventoryRulesFactory, $q, alertFactory){
 
   $scope.urlParams = ($stateParams.productList !== null) ? ($stateParams.productList).split(',') : $stateParams.productList;
@@ -68,10 +68,10 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
             productType: productList[nextIndex],
             facility: $scope.stockOutForm.facility
           };
-          stockOutBroadcastFactory.addStockLevelAndSave(stockOut)
+          broadcastAlertFactory.addStockLevelAndSave(stockOut)
               .then(function (result) {
                 //broadcast in the background
-                stockOutBroadcastFactory.broadcast(result);
+                broadcastAlertFactory.sendAlert(result);
                 addNextStockLevelAndSave(productList, nextIndex);
               })
               .catch(function () {
@@ -116,8 +116,8 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
         });
   };
 
-}).controller('StockOutBroadcastCtrl', function($scope,appConfig, $log, stockOutBroadcastFactory, $state, growl, alertFactory,
-                                                $modal, i18n, facilityStockListProductTypes, notificationService){
+}).controller('StockOutBroadcastCtrl', function($scope,appConfig, $log, $state, growl, alertFactory, $modal, i18n,
+                                                facilityStockListProductTypes, notificationService, broadcastAlertFactory){
 
   $scope.productTypes = facilityStockListProductTypes;
   //used to hold stock out form data
@@ -143,12 +143,12 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
     notificationService.getConfirmDialog(confirmationTitle, confirmationQuestion, buttonLabels)
         .then(function (isConfirmed) {
           if (isConfirmed === true) {
-            stockOutBroadcastFactory.addStockLevelAndSave(stockOut)
+            broadcastAlertFactory.addStockLevelAndSave(stockOut)
                 .then(function (result) {
                   if (typeof result !== 'undefined') {
                     alertFactory.success(i18n('stockOutBroadcastSuccessMsg'));
                     $state.go('home.index.home.mainActivity');
-                    stockOutBroadcastFactory.broadcast(result)
+                    broadcastAlertFactory.sendAlert(result)
                         .then(function (result) {
                           $log.info('stock-out broad-casted: ' + result);
                         }, function (reason) {
