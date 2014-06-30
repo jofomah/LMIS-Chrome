@@ -649,5 +649,8 @@
         "content": "$1"
       }
     }
+  },
+  "getStockCountByDate": {
+    "message": "get stock count by date failed."
   }
 }
