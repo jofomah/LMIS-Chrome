@@ -12,8 +12,7 @@ angular.module('lmisChromeApp')
     $scope.uuid = ($location.search()).uuid;
 
     if ($scope.uuid) {
-      storageService.loadTableObject(storageService.PROGRAM).then(function(
-        programs) {
+      storageService.loadTableObject(storageService.PROGRAM).then(function(programs) {
         $scope.program = programs[$scope.uuid];
       });
 
@@ -54,24 +53,19 @@ angular.module('lmisChromeApp')
 
   // jshint camelcase: false
   .controller('ProgramsProductsCtrl', function($scope, storageService) {
-    storageService.get(storageService.PROGRAM_PRODUCTS).then(function(
-      programProducts) {
+    storageService.get(storageService.PROGRAM_PRODUCTS).then(function(programProducts) {
       $scope.programProductList = programProducts;
     });
-    storageService.loadTableObject(storageService.PROGRAM).then(function(
-      programs) {
+    storageService.loadTableObject(storageService.PROGRAM).then(function(programs) {
       $scope.programs_object = programs;
     });
-    storageService.loadTableObject(storageService.PRODUCT_TYPES).then(function(
-      products) {
+    storageService.loadTableObject(storageService.PRODUCT_TYPES).then(function(products) {
       $scope.products_object = products;
     });
-    storageService.loadTableObject(storageService.CURRENCY).then(function(
-      currency) {
+    storageService.loadTableObject(storageService.CURRENCY).then(function(currency) {
       $scope.currency_object = currency;
     });
-    storageService.loadTableObject(storageService.COMPANY).then(function(
-      company) {
+    storageService.loadTableObject(storageService.COMPANY).then(function(company) {
       $scope.company_object = company;
     });
   })
@@ -121,8 +115,7 @@ angular.module('lmisChromeApp')
         growl.error('Can\'t save a blank form');
       }
     };
-    storageService.get(storageService.PROGRAM_PRODUCTS).then(function(
-      programProducts) {
+    storageService.get(storageService.PROGRAM_PRODUCTS).then(function(programProducts) {
       $scope.programProductList = programProducts;
     });
     $scope.removeProgramProduct = function(uuid) {
@@ -138,8 +131,7 @@ angular.module('lmisChromeApp')
     };
   })
 
-  .controller('ProductProfileListCtrl', function($scope, storageService, $filter,
-    ngTableParams) {
+  .controller('ProductProfileListCtrl', function($scope, storageService, $filter, ngTableParams) {
     storageService.get(storageService.PRODUCT_PROFILE).then(function(data) {
       // Table defaults
       var params = {
@@ -180,8 +172,7 @@ angular.module('lmisChromeApp')
       $scope.formulations = data;
     });
 
-    storageService.get(storageService.MODE_OF_ADMINISTRATION).then(function(
-      data) {
+    storageService.get(storageService.MODE_OF_ADMINISTRATION).then(function(data) {
       $scope.modes = data;
     });
 
@@ -214,8 +205,7 @@ angular.module('lmisChromeApp')
       $scope.uomList = data;
     });
 
-    storageService.loadTableObject(storageService.PRODUCT_TYPES).then(function(
-      data) {
+    storageService.loadTableObject(storageService.PRODUCT_TYPES).then(function(data) {
       $scope.products = data;
     });
 

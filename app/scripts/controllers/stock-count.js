@@ -11,13 +11,13 @@ angular.module('lmisChromeApp')
         },
         templateUrl: 'views/stock-count/index.html',
         resolve: {
-          appConfig: function(appConfigService){
+          appConfig: function(appConfigService) {
             return appConfigService.getCurrentAppConfig();
           },
-          stockCountByDate: function(stockCountFactory){
+          stockCountByDate: function(stockCountFactory) {
             return stockCountFactory.getStockCountListByDate();
           },
-          mostRecentStockCount: function(stockCountFactory){
+          mostRecentStockCount: function(stockCountFactory) {
             return stockCountFactory.getMostRecentStockCount();
           }
         },
@@ -25,47 +25,48 @@ angular.module('lmisChromeApp')
       })
       .state('stockCountForm', {
         parent: 'root.index',
-        data:{
-          label:'Stock Count Form'
+        data: {
+          label: 'Stock Count Form'
         },
-        url:'/stockCountForm?facility&reportMonth&reportYear&reportDay&countDate&productKey&detailView&editOff',
+        url: '/stockCountForm?facility&reportMonth&reportYear&reportDay&countDate&productKey&detailView&editOff',
         templateUrl: 'views/stock-count/stock-count-form.html',
         controller: 'StockCountFormCtrl',
-        resolve:{
-          appConfig: function(appConfigService){
+        resolve: {
+          appConfig: function(appConfigService) {
             return appConfigService.getCurrentAppConfig();
           }
         }
       });
   })
-  .controller('StockCountHomeCtrl', function($scope, stockCountFactory, stockCountByDate, appConfig, $state, mostRecentStockCount){
+  .controller('StockCountHomeCtrl', function($scope, stockCountFactory, stockCountByDate, appConfig, $state, mostRecentStockCount, growl, i18n) {
     $scope.stockCountsByCountDate = stockCountByDate;
-    $scope.stockCountCountDates =  Object.keys($scope.stockCountsByCountDate).reverse();
+    $scope.stockCountCountDates = Object.keys($scope.stockCountsByCountDate).sort(function(a, b){
+      return new Date(a).getTime() < new Date(b).getTime();
+    });
 
-   $scope.isEditable = function(stockCount){
-     return (typeof mostRecentStockCount !== 'undefined') && (mostRecentStockCount.uuid=== stockCount.uuid);
-   };
+    $scope.isEditable = function(stockCount) {
+      return (typeof mostRecentStockCount !== 'undefined') && (mostRecentStockCount.uuid === stockCount.uuid);
+    };
 
-    $scope.showStockCountFormByDate = function(date){
+    $scope.showStockCountFormByDate = function(date) {
       stockCountFactory.getStockCountByDate(date)
-          .then(function (stockCount) {
-            if (stockCount !== null) {
-              $state.go('stockCountForm', {detailView: true, countDate: date, editOff: !$scope.isEditable(stockCount) });
-            } else {
-              $state.go('stockCountForm', {countDate: date});
-            }
-          })
-          .catch(function () {
-            //TODO: decide what happens if for any reason, retrieving stock count fails.
-          });
+        .then(function(stockCount) {
+          if (stockCount !== null) {
+            $state.go('stockCountForm', {detailView: true, countDate: date, editOff: !$scope.isEditable(stockCount) });
+          } else {
+            $state.go('stockCountForm', {countDate: date});
+          }
+        })
+        .catch(function(reason) {
+          console.log(reason);
+          growl.error(i18n('getStockCountNyDateFailed'), {ttl: -1});
+        });
     };
   })
-  .controller('StockCountFormCtrl', function($scope, stockCountFactory, reminderFactory, $state, growl, alertFactory,
-                                             $stateParams, appConfig, appConfigService, cacheService, syncService,
-                                             utility, $rootScope, i18n, locationFactory){
+  .controller('StockCountFormCtrl', function($scope, stockCountFactory, reminderFactory, $state, growl, alertFactory, $stateParams, appConfig, appConfigService, cacheService, syncService, utility, $rootScope, i18n, locationFactory) {
     //TODO: refactor entire stock count controller to simpler more readable controller
-    $scope.getCategoryColor = function(categoryName){
-      if($scope.preview){
+    $scope.getCategoryColor = function(categoryName) {
+      if ($scope.preview) {
         return;
       }
       return categoryName.split(' ').join('-').toLowerCase();
@@ -87,25 +88,25 @@ angular.module('lmisChromeApp')
 
 
     //set maximum steps
-    if($scope.facilityProductsKeys.length>0){
-      $scope.maxStep =  $scope.facilityProductsKeys.length-1;
-    }else{
+    if ($scope.facilityProductsKeys.length > 0) {
+      $scope.maxStep = $scope.facilityProductsKeys.length - 1;
+    } else {
       $scope.maxStep = 0;
     }
 
-    var updateUIModel = function(){
+    var updateUIModel = function() {
       $scope.productProfileUom = $scope.facilityProducts[$scope.productKey];
     };
 
-    var updateCountValue = function(){
-      if(angular.isDefined($scope.stockCount.unopened[$scope.productKey])){
+    var updateCountValue = function() {
+      if (angular.isDefined($scope.stockCount.unopened[$scope.productKey])) {
         var value = $scope.facilityProducts[$scope.productKey].presentation.value;
-        $scope.countValue[$scope.productKey] = ($scope.stockCount.unopened[$scope.productKey]/value);
+        $scope.countValue[$scope.productKey] = ($scope.stockCount.unopened[$scope.productKey] / value);
       }
     };
 
-    $scope.convertToPresentationUom = function(){
-      if(angular.isDefined($scope.countValue[$scope.productKey])){
+    $scope.convertToPresentationUom = function() {
+      if (angular.isDefined($scope.countValue[$scope.productKey])) {
         var value = $scope.facilityProducts[$scope.productKey].presentation.value;
         $scope.stockCount.unopened[$scope.productKey] = $scope.countValue[$scope.productKey] * value;
       }
@@ -114,16 +115,16 @@ angular.module('lmisChromeApp')
 
     //load existing count for the day if any.
     var date = $scope.stockCountDate;
-    if($stateParams.countDate){
+    if ($stateParams.countDate) {
       date = $stateParams.countDate;
       $scope.reportDay = new Date(Date.parse(date)).getDate();
     }
-    stockCountFactory.getStockCountByDate(date).then(function(stockCount){
-      if(stockCount !== null){
+    stockCountFactory.getStockCountByDate(date).then(function(stockCount) {
+      if (stockCount !== null) {
         $scope.stockCount = stockCount;
         $scope.dateInfo = $scope.stockCount.created;
         $scope.editOn = true; // enable edit mode
-        if(angular.isUndefined($scope.stockCount.lastPosition)){
+        if (angular.isUndefined($scope.stockCount.lastPosition)) {
           $scope.stockCount.lastPosition = 0;
         }
         updateCountValue();
@@ -131,12 +132,12 @@ angular.module('lmisChromeApp')
     });
 
     var saveQueue = queue(1);//use 1 to serialize the asynchronous task.
-    var saveTask = function(callback){
+    var saveTask = function(callback) {
       stockCountFactory.save.stock($scope.stockCount)
-        .then(function(result){
+        .then(function(result) {
           callback(undefined, result);
         })
-        .catch(function(reason){
+        .catch(function(reason) {
           callback(reason);
         });
     };
@@ -152,33 +153,33 @@ angular.module('lmisChromeApp')
 
       //if final save, redirect to home page.
       if ($scope.redirect) {
-        saveQueue.awaitAll(function(err, result){
-          if(result){
+        saveQueue.awaitAll(function(err, result) {
+          if (result) {
             var msg = i18n('stockCountSuccessMsg');
             $scope.stockCount.uuid = result[0];//pick one uuid
             //FIXME: why stock count returns empty array when redirect is called before syncService
             /*
              some side effects of this hack
              1, when device is connected to GPRS network with no data bundle, it takes a much longer time before it
-                redirects to home page as it has to wait for syncService.canConnect to complete
+             redirects to home page as it has to wait for syncService.canConnect to complete
              2, redirect has to wait for app to finish syncing - success/fail
-            */
+             */
             syncService.syncItem(DB_NAME, $scope.stockCount)
-              .finally(function () {
+              .finally(function() {
                 $scope.isSaving = false;
                 alertFactory.success(msg);
                 $state.go('home.index.home.mainActivity');
               });
 
-          }else{
+          } else {
             console.log(err);
           }
         });
       }
     };
 
-    $scope.edit = function(key){
-      if($scope.editOff === false){
+    $scope.edit = function(key) {
+      if ($scope.editOff === false) {
         $scope.step = $scope.facilityProductsKeys.indexOf(key);
         $scope.productKey = key;
         $scope.preview = false;
@@ -188,52 +189,52 @@ angular.module('lmisChromeApp')
       }
     };
 
-    $scope.finalSave = function(){
+    $scope.finalSave = function() {
       $scope.isSaving = true;
-      if(utility.has($scope, 'stockCount')) {
+      if (utility.has($scope, 'stockCount')) {
         $scope.stockCount.lastPosition = 0;
         $scope.stockCount.isComplete = 1;
-        if(typeof $scope.stockCount.geoPosition === 'undefined'){
+        if (typeof $scope.stockCount.geoPosition === 'undefined') {
           $scope.stockCount.geoPosition = locationFactory.NO_GEO_POS;
         }
 
         //attach position GeoPosition
         locationFactory.getCurrentPosition()
-          .then(function (curPos) {
+          .then(function(curPos) {
             $scope.stockCount.geoPosition = locationFactory.getMiniGeoPosition(curPos);
             $scope.redirect = true;
             $scope.save();
           })
-          .catch(function (err) {
+          .catch(function(err) {
             console.log(err);
             $scope.redirect = true;
             $scope.save();
           });
-      }else{
+      } else {
         $scope.redirect = true;
         $scope.save();
       }
 
     };
 
-    $scope.changeState = function(direction){
+    $scope.changeState = function(direction) {
 
       $scope.currentEntry = $scope.countValue[$scope.facilityProductsKeys[$scope.step]];
-      if(stockCountFactory.validate.invalid($scope.currentEntry) && direction !== 0){
+      if (stockCountFactory.validate.invalid($scope.currentEntry) && direction !== 0) {
         stockCountFactory.get.errorAlert($scope, 1);
       }
-      else{
+      else {
         $scope.convertToPresentationUom();
         stockCountFactory.get.errorAlert($scope, 0);
-        if(direction !== 2){
-          $scope.step = direction === 0? $scope.step-1 : $scope.step + 1;
+        if (direction !== 2) {
+          $scope.step = direction === 0 ? $scope.step - 1 : $scope.step + 1;
         }
-        else{
+        else {
           $scope.preview = true;
         }
         $scope.redirect = false;
         $scope.stockCount.lastPosition = $scope.step;
-        if(angular.isUndefined($scope.stockCount.isComplete)){
+        if (angular.isUndefined($scope.stockCount.isComplete)) {
           $scope.stockCount.isComplete = 0;
         }
         $scope.save();

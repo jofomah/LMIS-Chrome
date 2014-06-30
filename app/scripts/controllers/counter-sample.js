@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('lmisChromeApp').config(function ($stateProvider) {
+angular.module('lmisChromeApp').config(function($stateProvider) {
   $stateProvider.state('counterSamples', {
     url: '/counter-samples',
     parent: 'root.index',

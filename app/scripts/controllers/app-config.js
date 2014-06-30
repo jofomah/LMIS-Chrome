@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('lmisChromeApp').config(function ($stateProvider) {
+angular.module('lmisChromeApp').config(function($stateProvider) {
   $stateProvider.state('appConfig', {
     parent: 'root.index',
     abstract: true,
@@ -17,21 +17,21 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
       parent: 'root.index',
       templateUrl: '/views/app-config/wizard.html',
       resolve: {
-        deviceEmail: function ($q, deviceInfoFactory) {
+        deviceEmail: function($q, deviceInfoFactory) {
           var deferred = $q.defer();
           deviceInfoFactory.getDeviceInfo()
-            .then(function (result) {
+            .then(function(result) {
               deferred.resolve(result.mainAccount);
             })
-            .catch(function () {
+            .catch(function() {
               deferred.resolve('');
             });
           return deferred.promise;
         },
-        ccuProfilesGroupedByCategory: function (ccuProfileFactory, $q) {
+        ccuProfilesGroupedByCategory: function(ccuProfileFactory, $q) {
           return $q.when(ccuProfileFactory.getAllGroupedByCategory());
         },
-        productProfilesGroupedByCategory: function (productProfileFactory, $q) {
+        productProfilesGroupedByCategory: function(productProfileFactory, $q) {
           return $q.when(productProfileFactory.getAllGroupedByCategory());
         }
       },
@@ -44,13 +44,13 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
       parent: 'root.index',
       templateUrl: '/views/app-config/edit-configuration.html',
       resolve: {
-        appConfig: function (appConfigService) {
+        appConfig: function(appConfigService) {
           return appConfigService.getCurrentAppConfig();
         },
-        ccuProfilesGroupedByCategory: function (ccuProfileFactory, $q) {
+        ccuProfilesGroupedByCategory: function(ccuProfileFactory, $q) {
           return $q.when(ccuProfileFactory.getAllGroupedByCategory());
         },
-        productProfilesGroupedByCategory: function (productProfileFactory, $q) {
+        productProfilesGroupedByCategory: function(productProfileFactory, $q) {
           return $q.when(productProfileFactory.getAllGroupedByCategory());
         }
       },
@@ -60,7 +60,7 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
       }
     });
 
-}).controller('AppConfigWizard',function ($scope, appConfigService, growl, $state, alertFactory, i18n, deviceEmail, $log, ccuProfilesGroupedByCategory, productProfilesGroupedByCategory, utility) {
+}).controller('AppConfigWizard',function($scope, appConfigService, growl, $state, alertFactory, i18n, deviceEmail, $log, ccuProfilesGroupedByCategory, productProfilesGroupedByCategory, utility) {
 
     $scope.spaceOutUpperCaseWords = utility.spaceOutUpperCaseWords;
     $scope.isSubmitted = false;
@@ -81,15 +81,15 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
     $scope.preSelectCcuProfiles = {};
 
     $scope.currentStep = $scope.STEP_ONE; //set initial step
-    $scope.moveTo = function (step) {
+    $scope.moveTo = function(step) {
       $scope.currentStep = step;
     };
 
-    $scope.loadAppFacilityProfile = function (nextStep, isEmailValid) {
+    $scope.loadAppFacilityProfile = function(nextStep, isEmailValid) {
       $scope.isSubmitted = true;
       $scope.disableBtn = isEmailValid;
       appConfigService.getAppFacilityProfileByEmail($scope.appConfig.uuid)
-        .then(function (result) {
+        .then(function(result) {
           $scope.disableBtn = false;
           $scope.isSubmitted = false;
           $scope.profileNotFound = false;
@@ -107,7 +107,7 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
           $scope.moveTo(nextStep);
 
         })
-        .catch(function () {
+        .catch(function() {
           $scope.disableBtn = false;
           $scope.isSubmitted = false;
           $scope.profileNotFound = true;
@@ -125,22 +125,22 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
       dateActivated: undefined
     };
 
-    $scope.onCcuSelection = function (ccuProfile) {
+    $scope.onCcuSelection = function(ccuProfile) {
       $scope.appConfig.selectedCcuProfiles =
         utility.addObjectToCollection(ccuProfile, $scope.appConfig.selectedCcuProfiles, 'dhis2_modelid');
       $scope.preSelectCcuProfiles = utility.castArrayToObject($scope.appConfig.selectedCcuProfiles, 'dhis2_modelid');
     };
 
-    $scope.onProductProfileSelection = function (productProfile) {
+    $scope.onProductProfileSelection = function(productProfile) {
       $scope.appConfig.facility.selectedProductProfiles =
         utility.addObjectToCollection(productProfile, $scope.appConfig.facility.selectedProductProfiles, 'uuid');
       $scope.preSelectProductProfileCheckBox = utility.castArrayToObject($scope.appConfig.facility.selectedProductProfiles, 'uuid');
     };
 
-    $scope.save = function () {
+    $scope.save = function() {
       $scope.isSaving = true;
       appConfigService.setup($scope.appConfig)
-        .then(function (result) {
+        .then(function(result) {
           if (typeof result !== 'undefined') {
             $scope.appConfig = result;
             alertFactory.success(i18n('appConfigSuccessMsg'));
@@ -148,14 +148,14 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
           } else {
             growl.error(i18n('appConfigFailedMsg'));
           }
-        }).catch(function () {
+        }).catch(function() {
           growl.error(i18n('appConfigFailedMsg'));
-        }).finally(function () {
+        }).finally(function() {
           $scope.isSaving = false;
         });
     };
 
-  }).controller('EditAppConfigCtrl', function ($scope, appConfigService, growl, $log, i18n, $state, appConfig, ccuProfilesGroupedByCategory, productProfilesGroupedByCategory, utility, alertFactory, $filter) {
+  }).controller('EditAppConfigCtrl', function($scope, appConfigService, growl, $log, i18n, $state, appConfig, ccuProfilesGroupedByCategory, productProfilesGroupedByCategory, utility, alertFactory, $filter) {
 
     $scope.spaceOutUpperCaseWords = utility.spaceOutUpperCaseWords;
     $scope.stockCountIntervals = appConfigService.stockCountIntervals;
@@ -173,11 +173,11 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
     //used to hold config form data
     $scope.appConfig = appConfig;
 
-    var setAppConfigLastUpdatedViewInfo = function(appConfig){
-      if(utility.has(appConfig, 'lastUpdated')){
+    var setAppConfigLastUpdatedViewInfo = function(appConfig) {
+      if (utility.has(appConfig, 'lastUpdated')) {
         var updatedDate = $filter('date')(new Date(appConfig.lastUpdated), 'yyyy-MM-dd HH:mm:ss');
         $scope.lastUpdated = i18n('lastUpdated', updatedDate);
-      }else{
+      } else {
         $scope.lastUpdated = i18n('lastUpdated', 'N/A');
       }
     };
@@ -199,23 +199,23 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
     //pre-load edit app facility profile config form with existing config.
     preLoadConfigForm(appConfig);
 
-    $scope.onCcuSelection = function (ccuProfile) {
+    $scope.onCcuSelection = function(ccuProfile) {
       $scope.appConfig.selectedCcuProfiles =
         utility.addObjectToCollection(ccuProfile, $scope.appConfig.selectedCcuProfiles, 'dhis2_modelid');
       $scope.preSelectCcuProfiles = utility.castArrayToObject($scope.appConfig.selectedCcuProfiles, 'dhis2_modelid');
     };
 
-    $scope.onProductProfileSelection = function (productProfile) {
+    $scope.onProductProfileSelection = function(productProfile) {
       $scope.appConfig.facility.selectedProductProfiles =
         utility.addObjectToCollection(productProfile, $scope.appConfig.facility.selectedProductProfiles, 'uuid');
       $scope.preSelectProductProfileCheckBox = utility.castArrayToObject($scope.appConfig.facility.selectedProductProfiles, 'uuid');
     };
 
-    $scope.save = function () {
+    $scope.save = function() {
 
       $scope.isSaving = true;
       appConfigService.setup($scope.appConfig)
-        .then(function (result) {
+        .then(function(result) {
           if (typeof result !== 'undefined') {
             $scope.appConfig = result;
             alertFactory.success(i18n('appConfigSuccessMsg'));
@@ -224,10 +224,10 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
             growl.error(i18n('appConfigFailedMsg'));
           }
         })
-        .catch(function (reason) {
+        .catch(function(reason) {
           growl.error(i18n('appConfigFailedMsg'));
           $log.error(reason);
-        }).finally(function () {
+        }).finally(function() {
           $scope.isSaving = false;
         });
     };

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('lmisChromeApp').config(function ($stateProvider) {
+angular.module('lmisChromeApp').config(function($stateProvider) {
   $stateProvider.state('takeSurvey', {
     url: '/take-survey?surveyUUID',
     parent: 'root.index',
@@ -9,13 +9,13 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
       label: 'Survey'
     },
     resolve: {
-      appConfig: function(appConfigService){
-          return appConfigService.getCurrentAppConfig();
-        }
+      appConfig: function(appConfigService) {
+        return appConfigService.getCurrentAppConfig();
+      }
     },
-    controller: function ($stateParams, $state, $scope, surveyFactory, growl, appConfig, i18n, alertFactory) {
+    controller: function($stateParams, $state, $scope, surveyFactory, growl, appConfig, i18n, alertFactory) {
 
-      if(!$stateParams.surveyUUID){
+      if (!$stateParams.surveyUUID) {
         growl.error(i18n('surveyNotFound'), {persistent: true});
         return;
       }
@@ -25,21 +25,21 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
       $scope.surveyResponse = [];
       $scope.responses = {};
 
-      if(typeof $scope.survey === 'undefined'){
+      if (typeof $scope.survey === 'undefined') {
         growl.error(i18n('surveyNotFound'), {persistent: true});
         return;
       }
 
-      $scope.newValue = function(questionId, newValue){
+      $scope.newValue = function(questionId, newValue) {
         $scope.responses[questionId] = newValue;
       };
 
-      $scope.clear = function(){
+      $scope.clear = function() {
         $scope.responses = {};
         $scope.surveyResponse = [];
       };
 
-      $scope.save = function () {
+      $scope.save = function() {
 
         $scope.isSaving = true;
 
@@ -61,20 +61,20 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
         }
 
         surveyFactory.saveSurveyResponse(surveyResponse)
-            .then(function (result) {
-              if (result) {
-                var successMsg = i18n('surveySuccessMsg', $scope.survey.name);
-                alertFactory.success(successMsg);
-                $state.go('home.index.home.mainActivity');
-                $scope.isSaving = false;
-              } else {
-                growl.error(i18n('surveyFailedMsg'));
-                $scope.isSaving = false;
-              }
-            }, function () {
+          .then(function(result) {
+            if (result) {
+              var successMsg = i18n('surveySuccessMsg', $scope.survey.name);
+              alertFactory.success(successMsg);
+              $state.go('home.index.home.mainActivity');
+              $scope.isSaving = false;
+            } else {
               growl.error(i18n('surveyFailedMsg'));
               $scope.isSaving = false;
-            });
+            }
+          }, function() {
+            growl.error(i18n('surveyFailedMsg'));
+            $scope.isSaving = false;
+          });
       };
 
     }

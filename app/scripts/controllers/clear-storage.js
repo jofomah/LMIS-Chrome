@@ -1,27 +1,27 @@
 'use strict';
 
-angular.module('lmisChromeApp').config(function ($stateProvider) {
+angular.module('lmisChromeApp').config(function($stateProvider) {
   $stateProvider.state('clearStorage', {
     url: '/clear-storage',
-    controller: function (storageService, $state, cacheService, $q, alertFactory, notificationService, i18n, memoryStorageService, fixtureLoaderService) {
+    controller: function(storageService, $state, cacheService, $q, alertFactory, notificationService, i18n, memoryStorageService, fixtureLoaderService) {
 
-      var clearAndLoadFixture = function () {
+      var clearAndLoadFixture = function() {
         var deferred = $q.defer();
         //clear storage, cache and memory store.
         cacheService.clearCache();
         memoryStorageService.clearAll();
         storageService.clear()
-          .then(function () {
+          .then(function() {
             //reload fixtures into memory store.
             fixtureLoaderService.loadFiles(storageService.FIXTURE_NAMES)
-              .then(function () {
+              .then(function() {
                 $state.go('appConfigWelcome');
               })
-              .catch(function(reason){
+              .catch(function(reason) {
                 console.error(reason);
               });
           })
-          .catch(function (reason) {
+          .catch(function(reason) {
             console.error(reason);
           });
         return deferred.promise;
@@ -31,14 +31,14 @@ angular.module('lmisChromeApp').config(function ($stateProvider) {
       var confirmationQuestion = i18n('clearStorageConfirmationMsg');
       var buttonLabels = [i18n('yes'), i18n('no')];
       notificationService.getConfirmDialog(confirmationTitle, confirmationQuestion, buttonLabels)
-        .then(function (isConfirmed) {
+        .then(function(isConfirmed) {
           if (isConfirmed === true) {
             clearAndLoadFixture();
           } else {
             $state.go('home.index.home.mainActivity');
           }
         })
-        .catch(function (reason) {
+        .catch(function(reason) {
           console.error(reason);
           $state.go('home.index.home.mainActivity');
         });
